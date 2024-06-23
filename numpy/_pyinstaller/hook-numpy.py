@@ -5,15 +5,26 @@ Our (some-what inadequate) docs for writing PyInstaller hooks are kept here:
 https://pyinstaller.readthedocs.io/en/stable/hooks.html
 
 """
-from PyInstaller.compat import is_conda, is_pure_conda
-from PyInstaller.utils.hooks import collect_dynamic_libs, is_module_satisfies
+from PyInstaller.utils.hooks import (
+    collect_dynamic_libs,
+    get_installer,
+    is_module_satisfies,
+    logger
+)
 
 # Collect all DLLs inside numpy's installation folder, dump them into built
 # app's root.
 binaries = collect_dynamic_libs("numpy", ".")
 
-# If using Conda without any non-conda virtual environment manager:
-if is_pure_conda:
+# If using Anaconda-packaged numpy, collect shared libraries using
+# conda-specific utility function.
+try:
+    installer = get_installer("numpy")
+except Exception:
+    logger.warning("hook-numpy: failed to determine installer!", exc_info=True)
+    installer = None
+
+if installer == "conda":
     # Assume running the NumPy from Conda-forge and collect it's DLLs from the
     # communal Conda bin directory. DLLs from NumPy's dependencies must also be
     # collected to capture MKL, OpenBlas, OpenMP, etc.
