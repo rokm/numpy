@@ -29,9 +29,4 @@ hiddenimports = ['numpy._core._dtype_ctypes', 'numpy._core._multiarray_tests']
 excludedimports = [
     "scipy",
     "pytest",
-    "f2py",
-    "setuptools",
-    "numpy.f2py",
-    "distutils",
-    "numpy.distutils",
 ]
